@@ -1,10 +1,7 @@
 package com.example.lab1.models;
 
 
-import com.example.lab1.utils.CarSerializer;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +10,6 @@ import java.io.Serializable;
 @Entity
 @Table(name="Car")
 @Data
-@JsonSerialize(using = CarSerializer.class)
 public class Car implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +19,13 @@ public class Car implements Serializable {
     @Column(name = "model")
     private String model;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "driverId")
-    @JsonBackReference
+    @JsonIgnoreProperties({"cars"})
     private Driver driver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "shopId")
-    @JsonBackReference
+    @JsonIgnoreProperties({"cars"})
     private Shop shop;
 }
