@@ -8,6 +8,7 @@ import com.example.lab1.models.Driver;
 import com.example.lab1.models.Shop;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,7 @@ public class CarController {
     public Response getCars() throws JsonProcessingException {
         List<Car> cars = carDao.getAll();
         return Response.status(Response.Status.OK.getStatusCode())
-                .entity(cars)
+                .entity(objectMapper.writeValueAsString(cars))
                 .build();
     }
 
