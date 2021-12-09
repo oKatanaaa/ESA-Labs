@@ -3,6 +3,7 @@ package com.example.lab2.controllers;
 
 import com.example.lab2.models.Car;
 import com.example.lab2.models.Driver;
+import com.example.lab2.models.Shop;
 import com.example.lab2.services.CarService;
 import com.example.lab2.services.DriverService;
 import com.example.lab2.services.ShopService;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/car")
+@RequestMapping(value = "/cars")
 public class CarController {
     @Autowired
     private CarService carService;
@@ -28,7 +29,7 @@ public class CarController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.GET) // localhost:8080/car
-    public ResponseEntity<Object> getCars(){
+    public ResponseEntity getCars(){
         List<Car> cars = carService.findAll();
         return ResponseEntity.ok().body(cars);
     }
@@ -38,7 +39,8 @@ public class CarController {
         Optional<Car> car = carService.findById(carId);
 
         if (!car.isPresent())
-            return new ResponseEntity<Object>(String.format("Car with id %s not found", carId), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(
+                    String.format("Car with id %s not found", carId), HttpStatus.NOT_FOUND);
 
         return ResponseEntity.ok().body(car.get());
     }
@@ -50,48 +52,65 @@ public class CarController {
             @RequestParam Integer shopId
     ) {
         Optional<Driver> driver = driverService.findById(driverId);
-        if (driver == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Driver with id %s not found", driverId)).build();
-        car.setDriver(driver);
+        if (!driver.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Driver with id %s not found", driverId), HttpStatus.NOT_FOUND);
 
-        Shop shop = shopService.get(Integer.valueOf(shopId));
-        if (shop == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Shop with id %s not found", shopId)).build();
-        car.setShop(shop);
+        car.setDriver(driver.get());
+
+        Optional<Shop> shop = shopService.findById(shopId);
+        if (!shop.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Shop with id %s not found", shopId), HttpStatus.NOT_FOUND);
+
+        car.setShop(shop.get());
 
         carService.save(car);
-        return Response.ok().build();
+        return ResponseEntity.ok().build();
     }
 
-    @PUT
-    @Path("/{carId}")
-    public Response updateCar(
-            @PathParam("carId") String carId,
-            @DefaultValue("") @FormParam("model") String model
+    @RequestMapping(value = "/{carId}", method = RequestMethod.PUT)
+    public ResponseEntity updateCar(
+            @RequestBody Car carUpdate,
+            @PathVariable("carId") Integer carId,
+            @RequestParam(defaultValue = "-1") Integer driverId,
+            @RequestParam(defaultValue = "-1") Integer shopId
     ) {
-        Car car = carService.get(Integer.valueOf(carId));
-        if (car == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Car with id %s not found", carId)).build();
+        Optional<Car> carWrapper = carService.findById(carId);
 
-        if (!model.isEmpty())
-            car.setModel(model);
+        if (!carWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Car with id %s not found", carId), HttpStatus.NOT_FOUND);
 
-        carService.update(car);
-        return Response.ok().build();
+        Car car = carWrapper.get();
+        if (!carUpdate.getModel().isEmpty())
+            car.setModel(carUpdate.getModel());
+
+        Optional<Driver> driverWrapper = driverService.findById(driverId);
+        if (!driverWrapper.isPresent() && driverId > 0)
+            return new ResponseEntity<Object>(
+                    String.format("Driver with id %s not found", carId), HttpStatus.NOT_FOUND);
+        car.setDriver(driverWrapper.get());
+
+        Optional<Shop> shopWrapper = shopService.findById(driverId);
+        if (!shopWrapper.isPresent() && shopId > 0)
+            return new ResponseEntity<Object>(
+                    String.format("Shop with id %s not found", carId), HttpStatus.NOT_FOUND);
+        car.setShop(shopWrapper.get());
+
+        carService.save(car);
+        return ResponseEntity.ok().build();
     }
 
-    @DELETE
-    @Path("/{carId}")
-    public Response deleteCar(@PathParam("carId") String carId) {
-        Car car = carService.get(Integer.valueOf(carId));
-        if (car == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Car with id %s not found", carId)).build();
+    @RequestMapping(value = "/{carId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteCar(@PathVariable("carId") Integer carId) {
+        Optional<Car> carWrapper = carService.findById(carId);
+        if (!carWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Car with id %s not found", carId), HttpStatus.NOT_FOUND);
 
-        carService.delete(car);
-        return Response.ok().build();
+        carService.delete(carWrapper.get());
+        return ResponseEntity.ok().build();
     }
+
 }

@@ -20,5 +20,6 @@ public class Shop implements Serializable {
     private String address;
 
     @OneToMany(mappedBy = "shop")
+    @JsonIgnoreProperties({"shop", "driver"})
     private List<Car> cars;
 }

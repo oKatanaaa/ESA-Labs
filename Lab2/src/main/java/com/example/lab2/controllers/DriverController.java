@@ -1,81 +1,74 @@
 package com.example.lab2.controllers;
 
 
-@WebServlet
-@Path("/driver")
+import com.example.lab2.models.Car;
+import com.example.lab2.models.Driver;
+import com.example.lab2.services.DriverService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(value = "/drivers")
 public class DriverController {
-    @EJB
-    private DriverDao driverDao;
+    @Autowired
+    private DriverService driverService;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
-    @GET
-    @Path("/") // localhost:8080/driver
-    public Response getDrivers() throws JsonProcessingException {
-        List<Driver> drivers = driverDao.getAll();
-        return Response.status(Response.Status.OK.getStatusCode())
-                .entity(objectMapper.writeValueAsString(drivers))
-                .build();
+    @RequestMapping(value = "/", method = RequestMethod.GET) // localhost:8080/driver
+    public ResponseEntity getDrivers() {
+        List<Driver> drivers = driverService.findAll();
+        return ResponseEntity.ok().body(drivers);
     }
 
-    @GET
-    @Path("/{driverId}") // localhost:8080/driver
-    public Response getDriverById(@PathParam("driverId") String driverId) throws JsonProcessingException {
-        Driver driver = driverDao.get(Integer.valueOf(driverId));
+    @RequestMapping(value = "/{driverId}", method = RequestMethod.GET) // localhost:8080/driver
+    public ResponseEntity getDriverById(@PathVariable("driverId") Integer driverId) {
+        Optional<Driver> driver = driverService.findById(driverId);
 
-        if (driver == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Driver with id %s not found", driverId)).build();
+        if (!driver.isPresent())
+            return new ResponseEntity<Object>(String.format("Driver with id %s not found", driverId), HttpStatus.NOT_FOUND);
 
-        return Response.status(Response.Status.OK.getStatusCode())
-                .entity(objectMapper.writeValueAsString(driver))
-                .build();
+        return ResponseEntity.ok().body(driver.get());
     }
 
-    @POST
-    @Path("/")
-    public Response addNewDriver(
-            @FormParam("name") String name,
-            @FormParam("email") String email) {
-        Driver driver = new Driver();
-        driver.setName(name);
-        driver.setEmail(email);
-
-        driverDao.save(driver);
-        return Response.ok().build();
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public ResponseEntity addNewDriver(@RequestBody Driver driver) {
+        driverService.save(driver);
+        return ResponseEntity.ok().build();
     }
 
-    @PUT
-    @Path("/{driverId}")
-    public Response updateDriver(
-            @PathParam("driverId") String driverId,
-            @DefaultValue("") @FormParam("name") String name,
-            @DefaultValue("") @FormParam("email") String email
+    @RequestMapping(value = "/{driverId}", method = RequestMethod.PUT)
+    public ResponseEntity updateDriver(
+            @RequestBody Driver driverUpdate,
+            @PathVariable("driverId") Integer driverId
     ) {
-        Driver driver = driverDao.get(Integer.valueOf(driverId));
-        if (driver == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Driver with id %s not found", driverId)).build();
+        Optional<Driver> driverWrapper = driverService.findById(driverId);
+        if (!driverWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Driver with id %s not found", driverId), HttpStatus.NOT_FOUND);
 
-        if (!name.isEmpty())
-            driver.setName(name);
+        Driver driver = driverWrapper.get();
+        if (!driverUpdate.getEmail().isEmpty())
+            driver.setEmail(driverUpdate.getEmail());
 
-        if (!email.isEmpty())
-            driver.setEmail(email);
+        if (!driverUpdate.getName().isEmpty())
+            driver.setName(driverUpdate.getName());
 
-        driverDao.update(driver);
-        return Response.ok().build();
+        driverService.save(driver);
+        return ResponseEntity.ok().build();
     }
 
-    @DELETE
-    @Path("/{driverId}")
-    public Response deleteDriver(@PathParam("driverId") String driverId) {
-        Driver driver = driverDao.get(Integer.valueOf(driverId));
-        if (driver == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Driver with id %s not found", driverId)).build();
+    @RequestMapping(value = "/{driverId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteDriver(@PathVariable("driverId") Integer driverId) {
+        Optional<Driver> driverWrapper = driverService.findById(driverId);
+        if (!driverWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Driver with id %s not found", driverId), HttpStatus.NOT_FOUND);
 
-        driverDao.delete(driver);
-        return Response.ok().build();
+        driverService.delete(driverWrapper.get());
+        return ResponseEntity.ok().build();
     }
 }

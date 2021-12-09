@@ -1,75 +1,74 @@
 package com.example.lab2.controllers;
 
 
-@WebServlet
-@Path("/shop")
+import com.example.lab2.models.Shop;
+import com.example.lab2.services.ShopService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(value = "/shops")
 public class ShopController {
-    @EJB
-    private ShopDao shopDao;
+    @Autowired
+    private ShopService shopService;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @GET
-    @Path("/") // localhost:8080/shop
-    public Response getClients() throws JsonProcessingException {
-        List<Shop> shops = shopDao.getAll();
-        return Response.status(Response.Status.OK.getStatusCode())
-                .entity(objectMapper.writeValueAsString(shops))
-                .build();
+    @RequestMapping(value = "/", method = RequestMethod.GET) // localhost:8080/shop
+    public ResponseEntity getShops() {
+        List<Shop> shops = shopService.findAll();
+        return ResponseEntity.ok().body(shops);
     }
 
-    @GET
-    @Path("/{shopId}") // localhost:8080/driver
-    public Response getShopById(@PathParam("shopId") String shopId) throws JsonProcessingException {
-        Shop shop = shopDao.get(Integer.valueOf(shopId));
+    @RequestMapping(value = "/{shopId}", method = RequestMethod.GET) // localhost:8080/driver
+    public ResponseEntity getShopById(@PathVariable("shopId") Integer shopId) {
+        Optional<Shop> shop = shopService.findById(shopId);
 
-        if (shop == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Car with id %s not found", shopId)).build();
+        if (!shop.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Car with id %s not found", shopId), HttpStatus.NOT_FOUND);
 
-        return Response.status(Response.Status.OK.getStatusCode())
-                .entity(objectMapper.writeValueAsString(shop))
-                .build();
+        return ResponseEntity.ok().body(shop.get());
     }
 
-    @POST
-    @Path("/")
-    public Response addNewShop(
-            @FormParam("address") String address) {
-        Shop shop = new Shop();
-        shop.setAddress(address);
-
-        shopDao.save(shop);
-        return Response.ok().build();
-    }
-
-    @PUT
-    @Path("/{shopId}")
-    public Response updateShop(
-            @PathParam("shopId") String shopId,
-            @DefaultValue("") @FormParam("address") String address
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public ResponseEntity addNewShop(
+            @RequestBody Shop shop
     ) {
-        Shop shop = shopDao.get(Integer.valueOf(shopId));
-        if (shop == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Shop with id %s not found", shopId)).build();
-
-        if (!address.isEmpty())
-            shop.setAddress(address);
-
-        shopDao.update(shop);
-        return Response.ok().build();
+        shopService.save(shop);
+        return ResponseEntity.ok().build();
     }
 
-    @DELETE
-    @Path("/{shopId}")
-    public Response deleteShop(@PathParam("shopId") String shopId) {
-        Shop shop = shopDao.get(Integer.valueOf(shopId));
-        if (shop == null)
-            return Response.status(Response.Status.NOT_FOUND.getStatusCode())
-                    .entity(String.format("Shop with id %s not found", shopId)).build();
+    @RequestMapping(value = "/{shopId}", method = RequestMethod.PUT)
+    public ResponseEntity updateShop(
+            @RequestBody Shop shopUpdate,
+            @PathVariable("shopId") Integer shopId
+    ) {
+        Optional<Shop> shopWrapper = shopService.findById(shopId);
+        if (!shopWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Car with id %s not found", shopId), HttpStatus.NOT_FOUND);
 
-        shopDao.delete(shop);
-        return Response.ok().build();
+        Shop shop = shopWrapper.get();
+        if (!shopUpdate.getAddress().isEmpty())
+            shop.setAddress(shopUpdate.getAddress());
+
+        shopService.save(shop);
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/{shopId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteShop(@PathVariable("shopId") Integer shopId) {
+        Optional<Shop> shopWrapper = shopService.findById(shopId);
+        if (!shopWrapper.isPresent())
+            return new ResponseEntity<Object>(
+                    String.format("Shop with id %s not found", shopId), HttpStatus.NOT_FOUND);
+
+        shopService.delete(shopWrapper.get());
+        return ResponseEntity.ok().build();
     }
 }

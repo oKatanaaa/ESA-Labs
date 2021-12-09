@@ -24,5 +24,6 @@ public class Driver implements Serializable {
     private String email;
 
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"shop", "driver"})
     private List<Car> cars;
 }

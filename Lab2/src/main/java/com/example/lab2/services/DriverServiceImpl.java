@@ -2,7 +2,6 @@ package com.example.lab2.services;
 
 import com.example.lab2.models.Driver;
 import com.example.lab2.repositories.DriverRepository;
-import com.example.lab2.repositories.ShopRepository;
 import com.example.lab2.utils.Converter;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;

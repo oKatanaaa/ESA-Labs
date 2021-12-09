@@ -21,9 +21,11 @@ public class Car implements Serializable {
 
     @ManyToOne()
     @JoinColumn(name = "driverId")
+    @JsonIgnoreProperties({"cars"})
     private Driver driver;
 
     @ManyToOne()
     @JoinColumn(name = "shopId")
+    @JsonIgnoreProperties({"cars"})
     private Shop shop;
 }
