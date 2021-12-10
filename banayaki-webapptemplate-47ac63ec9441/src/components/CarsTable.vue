@@ -2,7 +2,12 @@
   <div>
     <v-row>
       <v-col>
-        <v-btn @click="addNewRowStart">Add new item</v-btn>
+        <h1> Cars table</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="addNewRowStart">Add new car</v-btn>
       </v-col>
     </v-row>
     <v-simple-table>
@@ -94,7 +99,7 @@ export default {
       this.title = `Modify existing car #${item.id}`
       this.editingItemIndex = item.id
       // Defines fields we need to fill in the dialog
-      this.newItem = {'model': item.model}
+      this.newItem = {'model': item.model, 'driverId': item.driver.id, 'shopId': item.shop.id}
       this.nextFunction = this.editRowEnd
       this.showDialog = true;
     },
@@ -102,9 +107,9 @@ export default {
       // In case of javaEE 
       // addNewItem(item)
       // In case of Srping 
-      const body = {'address': item.address}
+      const body = {'model': item.model}
       // params = {'childId': 1}
-      const params = {}
+      const params = {'driverId': item.driverId, 'shopId': item.shopId}
       springUpdateItem(this.editingItemIndex, params, body)
         .then((response) => {
           console.log(response.data);
@@ -119,7 +124,7 @@ export default {
     addNewRowStart() {
       this.title = 'Add new car'
       // Defines fields we need to fill in the dialog
-      this.newItem = {model: ''}
+      this.newItem = {model: '', driverId: '', shopId: ''}
       this.nextFunction = this.addNewRowEnd
       this.showDialog = true;
     },
@@ -129,7 +134,7 @@ export default {
       // In case of Srping 
       const body = {'model': item.model}
       // params = {'childId': 1}
-      const params = {'driverId': -1, 'shopId': -1}
+      const params = {'driverId': item.driverId, 'shopId': item.shopId}
       springAddNewItem(params, body)
         .then((response) => {
           console.log(response.data);

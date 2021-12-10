@@ -10,7 +10,8 @@ export function eeGetById(id) {
     return backend.get(`${endpoint_url}/${id}`)
 }
 
-export function eeAddNewItem(data) {
+export function eeAddNewItem(params, body) {
+    const data = Object.assign(params, body);
     const formData = new URLSearchParams()
     for (const key in data) {
         formData.append(key, data[key])
@@ -19,8 +20,14 @@ export function eeAddNewItem(data) {
     return backend.post(`${endpoint_url}/`, formData, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
 }
 
-export function eeUpdateItem(data) {
-    return backend.put(`${endpoint_url}/`, data)
+export function eeUpdateItem(id, params, body) {
+    const data = Object.assign(params, body);
+    const formData = new URLSearchParams()
+    for (const key in data) {
+        formData.append(key, data[key])
+    }
+
+    return backend.put(`${endpoint_url}/${id}`, formData, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
 }
 
 export function eeDeleteItem(id) {

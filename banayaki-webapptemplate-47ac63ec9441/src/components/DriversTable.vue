@@ -2,7 +2,12 @@
   <div>
     <v-row>
       <v-col>
-        <v-btn @click="addNewRowStart">Add new item</v-btn>
+        <h1> Drivers table</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="addNewRowStart">Add new driver</v-btn>
       </v-col>
     </v-row>
     <v-simple-table>

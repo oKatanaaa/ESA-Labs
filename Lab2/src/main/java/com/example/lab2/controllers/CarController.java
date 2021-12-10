@@ -92,7 +92,7 @@ public class CarController {
                     String.format("Driver with id %s not found", carId), HttpStatus.NOT_FOUND);
         car.setDriver(driverWrapper.get());
 
-        Optional<Shop> shopWrapper = shopService.findById(driverId);
+        Optional<Shop> shopWrapper = shopService.findById(shopId);
         if (!shopWrapper.isPresent() && shopId > 0)
             return new ResponseEntity<Object>(
                     String.format("Shop with id %s not found", carId), HttpStatus.NOT_FOUND);
