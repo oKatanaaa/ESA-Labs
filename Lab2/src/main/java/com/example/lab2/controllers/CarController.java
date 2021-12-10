@@ -89,13 +89,13 @@ public class CarController {
         Optional<Driver> driverWrapper = driverService.findById(driverId);
         if (!driverWrapper.isPresent() && driverId > 0)
             return new ResponseEntity<Object>(
-                    String.format("Driver with id %s not found", carId), HttpStatus.NOT_FOUND);
+                    String.format("Driver with id %s not found", driverId), HttpStatus.NOT_FOUND);
         car.setDriver(driverWrapper.get());
 
         Optional<Shop> shopWrapper = shopService.findById(shopId);
         if (!shopWrapper.isPresent() && shopId > 0)
             return new ResponseEntity<Object>(
-                    String.format("Shop with id %s not found", carId), HttpStatus.NOT_FOUND);
+                    String.format("Shop with id %s not found", shopId), HttpStatus.NOT_FOUND);
         car.setShop(shopWrapper.get());
 
         carService.save(car);

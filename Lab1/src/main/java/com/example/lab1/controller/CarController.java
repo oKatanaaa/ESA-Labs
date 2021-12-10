@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @WebServlet
-@Path("/car")
+@Path("/cars")
 public class CarController {
     @EJB
     private CarDao carDao;
@@ -82,7 +82,9 @@ public class CarController {
     @Path("/{carId}")
     public Response updateCar(
             @PathParam("carId") String carId,
-            @DefaultValue("") @FormParam("model") String model
+            @DefaultValue("") @FormParam("model") String model,
+            @DefaultValue("-1") @FormParam("driverId") String driverId,
+            @DefaultValue("-1") @FormParam("shopId") String shopId
     ) {
         Car car = carDao.get(Integer.valueOf(carId));
         if (car == null)
@@ -91,6 +93,22 @@ public class CarController {
 
         if (!model.isEmpty())
             car.setModel(model);
+
+        if (!driverId.equals("-1")) {
+            Driver driver = driverDao.get(Integer.valueOf(driverId));
+            if (driver == null)
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode())
+                        .entity(String.format("Driver with id %s not found", driverId)).build();
+            car.setDriver(driver);
+        }
+
+        if (!shopId.equals("-1")) {
+            Shop shop = shopDao.get(Integer.valueOf(shopId));
+            if (shop == null)
+                return Response.status(Response.Status.NOT_FOUND.getStatusCode())
+                        .entity(String.format("Shop with id %s not found", shopId)).build();
+            car.setShop(shop);
+        }
 
         carDao.update(car);
         return Response.ok().build();

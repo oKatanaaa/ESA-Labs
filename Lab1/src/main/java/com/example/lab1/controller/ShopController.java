@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @WebServlet
-@Path("/shop")
+@Path("/shops")
 public class ShopController {
     @EJB
     private ShopDao shopDao;

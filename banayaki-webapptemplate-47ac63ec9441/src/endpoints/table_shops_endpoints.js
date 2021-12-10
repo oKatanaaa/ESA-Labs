@@ -1,6 +1,6 @@
 import backend from '../plugins/axios'
 
-const endpoint_url = '/shops'
+const endpoint_url = '/api/shops'
 
 export function eeGetAll() {
     return backend.get(`${endpoint_url}/`)

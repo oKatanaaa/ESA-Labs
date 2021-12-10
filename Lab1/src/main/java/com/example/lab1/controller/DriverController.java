@@ -13,7 +13,7 @@ import java.sql.Date;
 import java.util.List;
 
 @WebServlet
-@Path("/driver")
+@Path("/drivers")
 public class DriverController {
     @EJB
     private DriverDao driverDao;

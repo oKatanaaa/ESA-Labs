@@ -54,7 +54,7 @@
 
 <script>
 // Change this import in respect to the technology currently using in the backend 
-import { springGetAll, springDeleteItem, springAddNewItem, springUpdateItem } from "../endpoints/table_cars_endpoints";
+import { eeGetAll, eeDeleteItem, eeAddNewItem, eeUpdateItem } from "../endpoints/table_cars_endpoints";
 import DialogExample from "./DialogExample.vue";
 
 export default {
@@ -79,7 +79,7 @@ export default {
       // Placeholder
     },
     getAllRows() {
-      springGetAll().then((response) => {
+      eeGetAll().then((response) => {
           this.table_data = response.data;
         })
         .catch((error) => {
@@ -87,7 +87,7 @@ export default {
         });
     },
     deleteRow(itemId) {
-      springDeleteItem(itemId)
+      eeDeleteItem(itemId)
         .then(() => {
           this.getAllRows();
         })
@@ -110,7 +110,7 @@ export default {
       const body = {'model': item.model}
       // params = {'childId': 1}
       const params = {'driverId': item.driverId, 'shopId': item.shopId}
-      springUpdateItem(this.editingItemIndex, params, body)
+      eeUpdateItem(this.editingItemIndex, params, body)
         .then((response) => {
           console.log(response.data);
           this.getAllRows();
@@ -135,7 +135,7 @@ export default {
       const body = {'model': item.model}
       // params = {'childId': 1}
       const params = {'driverId': item.driverId, 'shopId': item.shopId}
-      springAddNewItem(params, body)
+      eeAddNewItem(params, body)
         .then((response) => {
           console.log(response.data);
           this.getAllRows();
