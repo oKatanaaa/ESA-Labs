@@ -3,12 +3,19 @@ package com.example.lab2.controllers;
 
 import com.example.lab2.models.Car;
 import com.example.lab2.models.Driver;
+import com.example.lab2.models.Shop;
 import com.example.lab2.services.DriverService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,10 +25,19 @@ public class DriverController {
     @Autowired
     private DriverService driverService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET) // localhost:8080/driver
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers="accept=application/json") // localhost:8080/driver
     public ResponseEntity getDrivers() {
         List<Driver> drivers = driverService.findAll();
         return ResponseEntity.ok().body(drivers);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers="accept=application/xml") // localhost:8080/shop
+    public ModelAndView getDriversXSLT() throws JsonProcessingException {
+        List<Driver> drivers = driverService.findAll();
+        ModelAndView modelAndView = new ModelAndView("drivers");
+        Source source = new StreamSource(new ByteArrayInputStream(new XmlMapper().writeValueAsBytes(drivers)));
+        modelAndView.addObject(source);
+        return modelAndView;
     }
 
     @RequestMapping(value = "/{driverId}", method = RequestMethod.GET) // localhost:8080/driver

@@ -7,11 +7,17 @@ import com.example.lab2.models.Shop;
 import com.example.lab2.services.CarService;
 import com.example.lab2.services.DriverService;
 import com.example.lab2.services.ShopService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +34,19 @@ public class CarController {
     private ShopService shopService;
 
 
-    @RequestMapping(value = "/", method = RequestMethod.GET) // localhost:8080/car
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers="accept=application/json") // localhost:8080/car
     public ResponseEntity getCars(){
         List<Car> cars = carService.findAll();
         return ResponseEntity.ok().body(cars);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET, headers="accept=application/xml") // localhost:8080/shop
+    public ModelAndView getCarsXSLT() throws JsonProcessingException {
+        List<Car> cars = carService.findAll();
+        ModelAndView modelAndView = new ModelAndView("cars");
+        Source source = new StreamSource(new ByteArrayInputStream(new XmlMapper().writeValueAsBytes(cars)));
+        modelAndView.addObject(source);
+        return modelAndView;
     }
 
     @RequestMapping(value = "/{carId}", method = RequestMethod.GET) // localhost:8080/driver
