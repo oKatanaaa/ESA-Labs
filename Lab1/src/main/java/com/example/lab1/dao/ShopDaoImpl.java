@@ -1,6 +1,5 @@
-package com.example.lab1.DAO;
+package com.example.lab1.dao;
 
-import com.example.lab1.models.Driver;
 import com.example.lab1.models.Shop;
 
 import javax.ejb.Stateless;
@@ -8,7 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
-import java.util.Optional;
 
 
 @Stateless

@@ -52,7 +52,7 @@
 
 <script>
 // Change this import in respect to the technology currently using in the backend 
-import { eeGetAll, eeDeleteItem, eeAddNewItem, eeUpdateItem } from "../endpoints/table_shops_endpoints";
+import { springGetAll, springDeleteItem, springAddNewItem, springUpdateItem } from "../endpoints/table_shops_endpoints";
 import DialogExample from "./DialogExample.vue";
 
 export default {
@@ -77,7 +77,7 @@ export default {
       // Placeholder
     },
     getAllRows() {
-      eeGetAll().then((response) => {
+      springGetAll().then((response) => {
           this.table_data = response.data;
         })
         .catch((error) => {
@@ -85,7 +85,7 @@ export default {
         });
     },
     deleteRow(itemId) {
-      eeDeleteItem(itemId)
+      springDeleteItem(itemId)
         .then(() => {
           this.getAllRows();
         })
@@ -96,19 +96,19 @@ export default {
     editRowStart(item) {
       this.title = `Modify existing shop #${item.id}`
       this.editingItemIndex = item.id
-      // Defines fields we need to fill in the dialog
+      // Defines fields we nspringd to fill in the dialog
       this.newItem = {'address': item.address}
       this.nextFunction = this.editRowEnd
       this.showDialog = true;
     },
     editRowEnd(item) {
-      // In case of javaEE 
+      // In case of javaspring 
       // addNewItem(item)
       // In case of Srping 
       const body = {'address': item.address}
       // params = {'childId': 1}
       const params = {}
-      eeUpdateItem(this.editingItemIndex, params, body)
+      springUpdateItem(this.editingItemIndex, params, body)
         .then((response) => {
           console.log(response.data);
           this.getAllRows();
@@ -121,19 +121,19 @@ export default {
     },
     addNewRowStart() {
       this.title = 'Add new shop'
-      // Defines fields we need to fill in the dialog
+      // Defines fields we nspringd to fill in the dialog
       this.newItem = {address: ''}
       this.nextFunction = this.addNewRowEnd
       this.showDialog = true;
     },
     addNewRowEnd(item) {
-      // In case of javaEE 
+      // In case of javaspring 
       // addNewItem(item)
       // In case of Srping 
       const body = {'address': item.address}
       // params = {'childId': 1}
       const params = {}
-      eeAddNewItem(params, body)
+      springAddNewItem(params, body)
         .then((response) => {
           console.log(response.data);
           this.getAllRows();

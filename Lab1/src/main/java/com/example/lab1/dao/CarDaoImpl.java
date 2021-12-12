@@ -1,9 +1,7 @@
-package com.example.lab1.DAO;
+package com.example.lab1.dao;
 
 import com.example.lab1.models.Car;
-import com.example.lab1.models.Shop;
 
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

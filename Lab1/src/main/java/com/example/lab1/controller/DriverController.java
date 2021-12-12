@@ -1,6 +1,6 @@
 package com.example.lab1.controller;
 
-import com.example.lab1.DAO.DriverDao;
+import com.example.lab1.dao.DriverDao;
 import com.example.lab1.models.Driver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,6 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.sql.Date;
 import java.util.List;
 
 @WebServlet

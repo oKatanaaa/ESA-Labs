@@ -1,8 +1,10 @@
 package com.example.lab2.services;
 
+import com.example.lab2.jms.Sender;
 import com.example.lab2.models.Driver;
 import com.example.lab2.repositories.DriverRepository;
 import com.example.lab2.utils.Converter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,9 @@ import java.util.Optional;
 @Transactional
 public class DriverServiceImpl implements DriverService{
     private final DriverRepository repository;
+
+    @Autowired
+    private Sender sender;
 
     public DriverServiceImpl(DriverRepository repository) {
         this.repository = repository;
@@ -33,11 +38,13 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public void save(Driver driver) {
         repository.save(driver);
+        sender.sendInsertEvent("Driver", driver);
     }
 
     @Override
     public void delete(Driver driver) {
         repository.delete(driver);
+        sender.sendDeleteEvent("Driver", driver);
     }
 
     @Override

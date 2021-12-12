@@ -1,5 +1,6 @@
 package com.example.lab2.services;
 
+import com.example.lab2.jms.Sender;
 import com.example.lab2.models.Shop;
 import com.example.lab2.repositories.ShopRepository;
 import com.example.lab2.utils.Converter;
@@ -16,6 +17,9 @@ import java.util.Optional;
 @Transactional
 public class ShopServiceImpl implements ShopService{
     private final ShopRepository repository;
+
+    @Autowired
+    private Sender sender;
 
     @Autowired
     public ShopServiceImpl(ShopRepository repository) {
@@ -35,10 +39,12 @@ public class ShopServiceImpl implements ShopService{
     @Override
     public void save(Shop shop) {
         repository.save(shop);
+        sender.sendInsertEvent("Shop", shop);
     }
 
     @Override
     public void delete(Shop shop) {
         repository.delete(shop);
+        sender.sendDeleteEvent("Shop", shop);
     }
 }

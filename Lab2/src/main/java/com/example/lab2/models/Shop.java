@@ -2,6 +2,7 @@ package com.example.lab2.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,5 +22,6 @@ public class Shop implements Serializable {
 
     @OneToMany(mappedBy = "shop")
     @JsonIgnoreProperties({"shop", "driver"})
+    @ToString.Exclude
     private List<Car> cars;
 }

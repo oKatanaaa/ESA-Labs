@@ -1,14 +1,13 @@
 package com.example.lab1.controller;
 
-import com.example.lab1.DAO.CarDao;
-import com.example.lab1.DAO.DriverDao;
-import com.example.lab1.DAO.ShopDao;
+import com.example.lab1.dao.CarDao;
+import com.example.lab1.dao.DriverDao;
+import com.example.lab1.dao.ShopDao;
 import com.example.lab1.models.Car;
 import com.example.lab1.models.Driver;
 import com.example.lab1.models.Shop;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
