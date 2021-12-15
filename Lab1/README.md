@@ -56,6 +56,8 @@ using interfaces.
 
 ![Architecture diagram](images/backend.png)
 
+![Web interface](images/web_interface.png)
+
 ## Task 7: Make everything work together
 
 It was a hell of a challenge, but somehow we managed to do this.
