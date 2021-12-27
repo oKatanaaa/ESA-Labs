@@ -1,6 +1,7 @@
 package com.example.lab2.services;
 
-import com.example.lab2.jms.Sender;
+import com.example.lab2.jms.DataModificationTopic;
+import com.example.lab2.jms.EventListenerFactory;
 import com.example.lab2.models.Shop;
 import com.example.lab2.repositories.ShopRepository;
 import com.example.lab2.utils.Converter;
@@ -18,12 +19,14 @@ import java.util.Optional;
 public class ShopServiceImpl implements ShopService{
     private final ShopRepository repository;
 
-    @Autowired
-    private Sender sender;
+    private DataModificationTopic dataModificationTopic;
 
     @Autowired
-    public ShopServiceImpl(ShopRepository repository) {
+    public ShopServiceImpl(ShopRepository repository, EventListenerFactory factory) {
         this.repository = repository;
+        dataModificationTopic = new DataModificationTopic();
+        dataModificationTopic.subscribe(factory.createEmailLoggerListener());
+        dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }
 
     @Override
@@ -39,12 +42,12 @@ public class ShopServiceImpl implements ShopService{
     @Override
     public void save(Shop shop) {
         repository.save(shop);
-        sender.sendInsertEvent("Shop", shop);
+        dataModificationTopic.sendInsertEvent("Shop", shop);
     }
 
     @Override
     public void delete(Shop shop) {
         repository.delete(shop);
-        sender.sendDeleteEvent("Shop", shop);
+        dataModificationTopic.sendDeleteEvent("Shop", shop);
     }
 }

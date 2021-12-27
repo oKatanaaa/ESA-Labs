@@ -1,9 +1,9 @@
 package com.example.lab2.services;
 
-import com.example.lab2.jms.Sender;
+import com.example.lab2.jms.DataModificationTopic;
+import com.example.lab2.jms.EventListenerFactory;
 import com.example.lab2.models.Car;
 import com.example.lab2.repositories.CarRepository;
-import com.example.lab2.repositories.ShopRepository;
 import com.example.lab2.utils.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -19,11 +19,14 @@ import java.util.Optional;
 public class CarServiceImpl implements CarService{
     private final CarRepository repository;
 
-    @Autowired
-    private Sender sender;
+    private DataModificationTopic dataModificationTopic;
 
-    public CarServiceImpl(CarRepository repository) {
+    @Autowired
+    public CarServiceImpl(CarRepository repository, EventListenerFactory factory) {
         this.repository = repository;
+        dataModificationTopic = new DataModificationTopic();
+        dataModificationTopic.subscribe(factory.createEventLoggerListener());
+        dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }
 
     @Override
@@ -39,12 +42,12 @@ public class CarServiceImpl implements CarService{
     @Override
     public void save(Car car) {
         repository.save(car);
-        sender.sendInsertEvent("Car", car);
+        dataModificationTopic.sendInsertEvent("Car", car);
     }
 
     @Override
     public void delete(Car car) {
         repository.delete(car);
-        sender.sendDeleteEvent("Car", car);
+        dataModificationTopic.sendDeleteEvent("Car", car);
     }
 }

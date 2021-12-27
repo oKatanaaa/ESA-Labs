@@ -1,6 +1,7 @@
 package com.example.lab2.services;
 
-import com.example.lab2.jms.Sender;
+import com.example.lab2.jms.DataModificationTopic;
+import com.example.lab2.jms.EventListenerFactory;
 import com.example.lab2.models.Driver;
 import com.example.lab2.repositories.DriverRepository;
 import com.example.lab2.utils.Converter;
@@ -18,11 +19,14 @@ import java.util.Optional;
 public class DriverServiceImpl implements DriverService{
     private final DriverRepository repository;
 
-    @Autowired
-    private Sender sender;
+    private DataModificationTopic dataModificationTopic;
 
-    public DriverServiceImpl(DriverRepository repository) {
+    @Autowired
+    public DriverServiceImpl(DriverRepository repository, EventListenerFactory factory) {
         this.repository = repository;
+        dataModificationTopic = new DataModificationTopic();
+        dataModificationTopic.subscribe(factory.createEventLoggerListener());
+        dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }
 
     @Override
@@ -38,13 +42,13 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public void save(Driver driver) {
         repository.save(driver);
-        sender.sendInsertEvent("Driver", driver);
+        dataModificationTopic.sendInsertEvent("Driver", driver);
     }
 
     @Override
     public void delete(Driver driver) {
         repository.delete(driver);
-        sender.sendDeleteEvent("Driver", driver);
+        dataModificationTopic.sendDeleteEvent("Driver", driver);
     }
 
     @Override
