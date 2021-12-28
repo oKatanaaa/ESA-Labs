@@ -58,7 +58,7 @@ We implemented pattern Listener for this task.
 
 The following classes were created:
 
-![JMS](images/jms.png)
+![JMS](images/jms2.png)
 
 DataModificationTopic represents a 'logging layer' of each service
 meaning that it 'logs' every event related to the data modification (delete, add, update).
