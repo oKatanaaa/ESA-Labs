@@ -54,21 +54,21 @@ We created the following table:
 
 ## Task 2-6: Implementing JMS
 
-We used Spring tools in order to implement JMS in our application:
-`JmsTemplate` and `@JmsListener` annotation.
+We implemented pattern Listener for this task.
 
 The following classes were created:
 
 ![JMS](images/jms.png)
 
-Sender class is used to send messages to the Receiver which writes them into
-the database. Each servlet calls the corresponding method of Sender during
-`PUT`, `POST` and `DELETE` requests and provides name of the entity that is being changed
-and its new value. Sender then creates an Event instance that encapsulates
-all the necessary information and sends it to the Receiver. Receiver 
-first writes event into the events table using the corresponding service,
-then extracts necessary portion of information, puts it into an Email object
-and writes in into the corresponding table of emails (see picture below) using the appropriate
-service.
+DataModificationTopic represents a 'logging layer' of each service
+meaning that it 'logs' every event related to the data modification (delete, add, update).
+Instances of classes that implement `EventListener` interface can subscribe to DataModificationTopic
+to listen for the corresponding event. Once an event occurs, DataModificationTopic notifies
+all of its listeners by calling `update` method in each one and providing the corresponding
+`Event` instance.
+Speaking of listeners, two listeners were created: 
+1. `EventLoggerListener` - logs every event into a database.
+2. `EmailLoggerListener` - imitates sending a corresponding email when some event occurs.
+In truth it simply writes everything into the database.
 
 ![Email](images/email.png)
