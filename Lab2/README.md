@@ -66,8 +66,8 @@ Instances of classes that implement `EventListener` interface can subscribe to D
 to listen for the corresponding event. Once an event occurs, DataModificationTopic notifies
 all of its listeners by calling `update` method in each one and providing the corresponding
 `Event` instance.
-Speaking of listeners, two listeners were created: 
-1. `EventLoggerListener` - logs every event into a database.
+Speaking of EventListeners, two listeners were created: 
+1. `EventLoggerListener` - logs every event into the database.
 2. `EmailLoggerListener` - imitates sending a corresponding email when some event occurs.
 In truth it simply writes everything into the database.
 
