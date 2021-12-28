@@ -22,9 +22,9 @@ public class CarServiceImpl implements CarService{
     private DataModificationTopic dataModificationTopic;
 
     @Autowired
-    public CarServiceImpl(CarRepository repository, EventListenerFactory factory) {
+    public CarServiceImpl(CarRepository repository, EventListenerFactory factory, DataModificationTopic topic) {
         this.repository = repository;
-        dataModificationTopic = new DataModificationTopic();
+        dataModificationTopic = topic;
         dataModificationTopic.subscribe(factory.createEventLoggerListener());
         dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }

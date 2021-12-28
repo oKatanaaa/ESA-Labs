@@ -16,16 +16,16 @@ import java.util.Optional;
 @Service
 @Repository
 @Transactional
-public class DriverServiceImpl implements DriverService{
+public class DriverServiceImpl implements DriverService {
     private final DriverRepository repository;
 
     private DataModificationTopic dataModificationTopic;
 
     @Autowired
-    public DriverServiceImpl(DriverRepository repository, EventListenerFactory factory) {
+    public DriverServiceImpl(DriverRepository repository, EventListenerFactory factory, DataModificationTopic topic) {
         this.repository = repository;
-        dataModificationTopic = new DataModificationTopic();
-        dataModificationTopic.subscribe(factory.createEventLoggerListener());
+        dataModificationTopic = topic;
+        dataModificationTopic.subscribe(factory.createEmailLoggerListener());
         dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }
 
