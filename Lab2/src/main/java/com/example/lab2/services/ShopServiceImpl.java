@@ -6,10 +6,12 @@ import com.example.lab2.models.Shop;
 import com.example.lab2.repositories.ShopRepository;
 import com.example.lab2.utils.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jms.JMSException;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +24,11 @@ public class ShopServiceImpl implements ShopService{
     private DataModificationTopic dataModificationTopic;
 
     @Autowired
-    public ShopServiceImpl(ShopRepository repository, EventListenerFactory factory) {
+    public ShopServiceImpl(ShopRepository repository, JmsTemplate template) throws JMSException {
         this.repository = repository;
-        dataModificationTopic = new DataModificationTopic();
-        dataModificationTopic.subscribe(factory.createEmailLoggerListener());
-        dataModificationTopic.subscribe(factory.createEventLoggerListener());
+        dataModificationTopic = new DataModificationTopic(template);
+        //dataModificationTopic.subscribe(factory.createEmailLoggerListener());
+        //dataModificationTopic.subscribe(factory.createEventLoggerListener());
     }
 
     @Override
