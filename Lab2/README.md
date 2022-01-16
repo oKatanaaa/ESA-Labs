@@ -44,7 +44,7 @@ converter that transforms XML into beautiful HTML.
 ![XSLT](images/xslt.png)
 
 
-# Practical work 4: JMS
+# Practical work #4: JMS
 
 ## Task 1: New database table
 
